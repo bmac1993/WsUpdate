@@ -4,7 +4,7 @@
   "description": "A very simple web socket chat client",
   "main": "server.js",
   "scripts": {
-    "start": "node ./src/server.js",
+    "start": "node ./src/serverHTTP.js",
     "pretest": "jshint ./src",
     "test": "echo \"Tests complete\""
   },

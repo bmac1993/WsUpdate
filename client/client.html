@@ -10,7 +10,8 @@
          online at your node.js address under /socket.io/socket.io.js 
          You can disable that on the server if desired
     -->
-	<script src="http://localhost:18000/socket.io/socket.io.js"></script>
+	<script src="http://localhost:18000/socket.io/socket.io.js"></script> <!-- only works when file not hosted by node -->
+    <script src="/socket.io/socket.io.js"></script> <!-- works if file is hosted by node, even in heroku or online -->
 	<script>
         //The socket.io client library automatically makes a global for the library called io.
         //You can change it to use a different name instead if desired.
@@ -23,7 +24,7 @@
         
             //tell the io library to connect to the address specified and grab the connected socket as 'socket'
             //This can be a number of different procotols (not just http)
-			var socket = io.connect('http://localhost:18000');
+			var socket = io.connect();
 			
             //when the socket connects, fire the connected function
             //The 'connect' event is automatically fired by socket.io when a socket connects
