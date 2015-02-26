@@ -1,29 +1,36 @@
-var http = require('http');
-var fs = require('fs');
+var http = require('http'); //the http module will be stored as the variable http
+var fs = require('fs'); //the file system module for file/folder functions stored as the variable fs
 //import the websocket library. There are many, but socket.io is one of the most common and feature rich
 var socketio = require('socket.io');
 
+//port for the server to listen on. process.env.port and process.env.NODE_PORT are environment variables
+//that can be setup on a server (such as heroku) for non-hard-coded variables.
+//If neither are set (usually local development) then use 3000
 var port = process.env.PORT || process.env.NODE_PORT || 3000;
 
-var index;
+//read the client html file into memory
+//__dirname in node is the current directory (in this case the same folder as the server js file)
+var index = fs.readFileSync(__dirname + '/../client/client.html');
 
-fs.readFile(__dirname + '/../client/client.html', function(err, data) {
-    if(err) {
-        throw err;
-    }
-    
-    index = data;
-});
-
+//function to handle requests
+//will automatically receive request and response from the http server
 function onRequest(request, response) {
-    response.writeHead(200, {"Content-Type": "text/html"});
-    response.write(index);
-    response.end();
+    //use the response's write head function to add a status code and a JSON object of all the headers.
+    //This is where you can set the content type, content length, location, etc.
+    //Optionally the second argument can be an error message like "Access forbidden" and the third argument can be the JSON headers
+    response.writeHead(200, {"Content-Type": "text/html"}); //respond with 200 success and an HTML content type
+    //the response's write method writes chunks of data to the body. The optional second argument is encoding type. Default is UTF-8
+    response.write(index); //write the index html file to the response
+    //the response's end method sends the response back to the client. Otherwise the response never gets sent. 
+  //Code can run after this, but nothing can be sent back to the client after this because HTTP is limited to one response per request
+    response.end(); 
 }
 
+//call the http module's create server function with a request callback and tell it to listen on port 3000. 
+//Normally this would be port 80, 443 or 8080, but in this example we use 3000 to prevent conflicting with local machine traffic
 var app = http.createServer(onRequest).listen(port);
 
-//start a socketio server (port 18000 is arbitrary) and grab the server as io
+//pass in the http server into socketio and grab the websocket server as io
 var io = socketio(app);
 
 //object to hold all of our connected users
