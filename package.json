@@ -1,0 +1,20 @@
+{
+  "name": "simple_ws",
+  "version": "0.0.0",
+  "description": "A very simple web socket chat client",
+  "main": "server.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "pretest": "jshint ./src",
+    "test": "echo \"Tests complete\""
+  },
+  "author": "Cody Van De Mark",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "~1.1.0",
+    "socket.io-client": "~1.1.0"
+  },
+  "devDependencies": {
+    "jshint": "~2.5.6"
+  }
+}

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- import the websocket client library. You can code websockets from scratch
+         but we will just import a library. In this case we are using socket.io which is 
+         one of the most popular and feature rich websocket libraries.
+         
+         You can point the src for the script to any host online, but
+         by default the socket.io nodejs library will host the client library
+         online at your node.js address under /socket.io/socket.io.js 
+         You can disable that on the server if desired
+    -->
+	<script src="http://localhost:18000/socket.io/socket.io.js"></script>
+	<script>
+        //The socket.io client library automatically makes a global for the library called io.
+        //You can change it to use a different name instead if desired.
+        
+		function connectSocket(e) {
+            //grab the message field
+        	var message = document.querySelector("#message");
+            //grab the chat field
+			var chat = document.querySelector("#chat");
+        
+            //tell the io library to connect to the address specified and grab the connected socket as 'socket'
+            //This can be a number of different procotols (not just http)
+			var socket = io.connect('http://localhost:18000');
+			
+            //when the socket connects, fire the connected function
+            //The 'connect' event is automatically fired by socket.io when a socket connects
+			socket.on('connect', function() {
+				console.log('connecting');
+                
+                //grab the username from the username field
+				var user = document.querySelector("#username").value;
+				
+                //if there isn't one, generate a somewhat random one
+				if(!user) {
+					user = 'user' + (Math.floor((Math.random()*1000)) + 1);
+				}
+			
+                //send a 'join' message type to the server with the user's username
+                //The 'join' event is an entirely custom event. 
+                //You could call this message type anything as long as it is unique.
+                //The server needs to accept the same message types
+				socket.emit('join', { name: user });
+			});
+			
+            //when the custom 'msg' message type fires, call this function
+            //'msg' is a custom message type and can be called anything as long as it is unique.
+            //the server needs to accept the same message types
+			socket.on('msg', function(data) {
+                //Update the chat field on the screen appending the message to the bottom of the list
+				chat.value = chat.value + "\n" + data.name + ": " + data.msg;
+			});
+			
+            //when the send button is clicked, send the message field to the server
+			document.querySelector("#send").addEventListener("click", function() {
+                //if the message field is not empty, then send the message
+				if(message.value.length > 0 ) {
+                    //emit a message of type 'msg' to the server using the client socket's emit method
+                    //In this case we send json with the message to it. 
+					socket.emit('msg', {msg: message.value});
+				}
+			});
+		}
+	
+		function init() {
+            //when the user clicks the connect button, fire the connectSocket function
+			document.querySelector("#connect").addEventListener('click', connectSocket);
+		}
+	
+        //when the page is loaded, call init
+		window.onload = init;
+	</script>
+	<style>
+		textarea {
+			display: block;
+			background-color: #EEEEEE;
+		}
+	</style>
+</head>
+<body>
+	<label for="user">Username:</label>
+	<input id="username" name="user" type="text"/>
+	<input id="connect" type='button' value='connect'/>
+	</br>
+	<label for="message">Message:</label>
+	<input id="message" name="message" type="text"/>
+	<input id="send" type="button" value="send" />
+	
+	<textarea id="chat" rows="20" cols="40" readonly> </textarea>
+</body>
+</html>
